@@ -35,6 +35,7 @@ module.exports = class S3Plugin {
       exclude,
       progress,
       basePath,
+      removePartFromPath,
       directory,
       htmlFiles,
       basePathTransform = DEFAULT_TRANSFORM,
@@ -60,6 +61,7 @@ module.exports = class S3Plugin {
       include,
       exclude,
       basePath,
+      removePartFromPath,
       priority,
       htmlFiles: typeof htmlFiles === 'string' ? [htmlFiles] : htmlFiles,
       progress: _.isBoolean(progress) ? progress : true
@@ -286,7 +288,11 @@ module.exports = class S3Plugin {
   }
 
   uploadFile(fileName, file) {
+    if (this.options.removePartFromPath !== '')
+      fileName = fileName.replace(this.options.removePartFromPath, '')
+
     let Key = this.options.basePath + fileName
+
     const s3Params = _.mapValues(this.uploadOptions, (optionConfig) => {
       return _.isFunction(optionConfig) ? optionConfig(fileName, file) : optionConfig
     })
